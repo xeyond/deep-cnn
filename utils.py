@@ -1,6 +1,6 @@
 from scipy import misc
 import numpy as np
-import json
+
 
 def read_img(img_path, img_size=(224, 224), expand_dims=False):
     img_mat = misc.imread(img_path, mode='RGB')
@@ -21,8 +21,4 @@ def get_class_name_by_id(class_id):
 
 
 if __name__ == '__main__':
-    name = get_class_name_by_id(65)
-    print(name)
-    test_img_path = 'data/test_imgs/ILSVRC2012_val_00000028.JPEG'
-    img = read_img(test_img_path)
-    print(img.shape)
+    pass
