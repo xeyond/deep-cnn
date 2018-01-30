@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+RGB_MEAN = [123.68, 116.78, 103.94]
+
 
 class VGG19(object):
     def __init__(self, weights_path=None, n_class=1000):
@@ -16,13 +18,11 @@ class VGG19(object):
             if 'global_step' in var_name:
                 continue
             new_var_name = "%s/%s" % tuple(var_name.split('/')[-2:])
-            # print(new_var_name)
             weights_dict[new_var_name] = reader.get_tensor(var_name)
         return weights_dict
 
     def _get_var(self, name, shape):
         if name in self.weights_dict:
-            print(name, 'get!')
             var_initializer = tf.initializers.constant(self.weights_dict[name])
         else:
             var_initializer = tf.initializers.truncated_normal(shape, mean=0.0, stddev=0.001)
@@ -40,6 +40,7 @@ class VGG19(object):
         return conv
 
     def build_model(self, inputs, is_train=True, keep_prob=0.5):
+        inputs = inputs - RGB_MEAN
         self.conv1_1 = self._conv2d('conv1_1', inputs, filters=64, activation=tf.nn.relu)
         self.conv1_2 = self._conv2d('conv1_2', self.conv1_1, filters=64, activation=tf.nn.relu)
         self.pool1 = tf.nn.max_pool(self.conv1_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
@@ -84,23 +85,3 @@ class VGG19(object):
                                 activation=tf.nn.softmax)
         self.fc8 = tf.squeeze(self.fc8, axis=[1, 2])
         print(self.fc8)
-
-
-def test():
-    reader = tf.train.NewCheckpointReader('vgg_19.ckpt')
-    var_to_shape_map = reader.get_variable_to_shape_map()
-    # print(var_to_shape_map)
-    for key in sorted(var_to_shape_map):
-        print(key, var_to_shape_map[key])
-    # print(reader.debug_string().decode("utf-8"))
-    print('-' * 20)
-    conv2_2_b = reader.get_tensor('vgg_19/conv2/conv2_2/biases')
-    print(conv2_2_b.shape)
-    # print(reader.debug_string().decode("utf-8"))
-
-
-if __name__ == "__main__":
-    vgg19 = VGG19('vgg_19.ckpt')
-    inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    vgg19.build_model(inputs)
-    # test()
