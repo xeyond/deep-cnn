@@ -1,6 +1,5 @@
 .idea/
 tmp.py
-*.ckpt
 data/
 
 # Byte-compiled / optimized / DLL files
