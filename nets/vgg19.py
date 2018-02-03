@@ -23,9 +23,9 @@ class VGG19(object):
 
     def _get_var(self, name, shape):
         if name in self.weights_dict:
-            var_initializer = tf.initializers.constant(self.weights_dict[name])
+            var_initializer = tf.constant(self.weights_dict[name])
         else:
-            var_initializer = tf.initializers.truncated_normal(shape, mean=0.0, stddev=0.001)
+            var_initializer = tf.truncated_normal(shape, mean=0.0, stddev=0.001)
         return tf.get_variable(name=name, shape=shape, initializer=var_initializer)
 
     def _conv2d(self, name, inputs, filters, kernel_size=(3, 3), strides=(1, 1), padding='SAME', activation=None):
